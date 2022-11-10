@@ -52,7 +52,7 @@ function App() {
 		const isCorrect = num === answer && timeout.current;
 		return (
 			<button
-				className={`h-full w-24 border-2 p-2  ${
+				className={`h-full w-full md:w-24 border-2 p-2  ${
 					isBad
 						? "bg-red-100"
 						: isCorrect
@@ -79,14 +79,14 @@ function App() {
 			<div className="flex justify-center items-center w-screen h-screen">
 				<div className="flex-col">
 					<h1 className="text-4xl text-center m-6">guess the hex</h1>
-					<div className="text-center mb-10">
+					<div className="text-center mb-2 md:mb-10">
 						<h1 className="text-xl">Score: {score}</h1>
 					</div>
 					<div
-						className="w-96 h-96"
+						className="w-64 h-64 md:w-96 md:h-96"
 						style={{ backgroundColor: batch[answer] }}
 					/>
-					<div className="flex w-96 h-24 justify-between mt-10">
+					<div className="flex flex-col md:flex-row w-64 md:w-96 md:h-24 justify-between mt-10">
 						{batch.map((hex, i) => button(hex, i))}
 					</div>
 					<div className="flex justify-center items-end h-12">
