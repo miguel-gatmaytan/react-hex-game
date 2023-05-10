@@ -21,7 +21,7 @@ function App() {
 	const [answer, setAnswer] = useState(0);
 	const [batch, setBatch] = useState<string[]>([]);
 	const [correct, setCorrect] = useState<boolean | null>(null);
-	const [badGuesses, setBadGuesses] = useState<number[]>([]);
+	const [wrongGuesses, setWrongGuesses] = useState<number[]>([]);
 	const timeout = useRef<any>(null);
 
 	const makeBatch = () => {
@@ -34,7 +34,7 @@ function App() {
 		makeBatch();
 		setAnswer(Math.floor(Math.random() * 3));
 		setCorrect(null);
-		setBadGuesses([]);
+		setWrongGuesses([]);
 		timeout.current = null;
 	};
 
@@ -44,23 +44,23 @@ function App() {
 		setCorrect(isCorrect);
 		setScore((score) => (isCorrect ? score + 1 : score - 1));
 		if (isCorrect) timeout.current = setTimeout(reset, 2500);
-		else setBadGuesses((badGuesses) => [...badGuesses, num]);
+		else setWrongGuesses((wrongGuesses) => [...wrongGuesses, num]);
 	};
 
 	const button = (val: string, num: number) => {
-		const isBad = badGuesses.includes(num);
+		const isWrong = wrongGuesses.includes(num);
 		const isCorrect = num === answer && timeout.current;
 		return (
 			<button
 				className={`h-full w-full md:w-24 border-2 p-2  ${
-					isBad
+					isWrong
 						? "bg-red-100"
 						: isCorrect
 						? "bg-green-100"
 						: "hover:bg-gray-100 active:bg-gray-200 disabled:bg-white"
 				}`}
 				onClick={() => checkAnswer(num)}
-				disabled={isBad || timeout.current}
+				disabled={isWrong || timeout.current}
 			>
 				{val}
 			</button>
@@ -83,7 +83,7 @@ function App() {
 						<h1 className="text-xl">Score: {score}</h1>
 					</div>
 					<div
-						className="w-64 h-64 md:w-96 md:h-96"
+						className="w-64 h-64 md:w-96 md:h-96 transition-colors"
 						style={{ backgroundColor: batch[answer] }}
 					/>
 					<div className="flex flex-col md:flex-row w-64 md:w-96 md:h-24 justify-between mt-10">
