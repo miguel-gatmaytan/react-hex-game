@@ -30,12 +30,16 @@ function App() {
 		setBatch(newBatch);
 	};
 
-	const reset = () => {
+	const start = () => {
 		makeBatch();
 		setAnswer(Math.floor(Math.random() * 3));
+	};
+
+	const reset = () => {
+		timeout.current = null;
 		setCorrect(null);
 		setWrongGuesses([]);
-		timeout.current = null;
+		start();
 	};
 
 	const checkAnswer = (num: number) => {
@@ -68,7 +72,7 @@ function App() {
 	};
 
 	useEffect(() => {
-		reset();
+		start();
 	}, []);
 
 	return (
