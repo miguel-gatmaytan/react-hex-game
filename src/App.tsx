@@ -21,18 +21,20 @@ function App() {
 	const [answer, setAnswer] = useState(0);
 	const [batch, setBatch] = useState<string[]>([]);
 	const [correct, setCorrect] = useState<boolean | null>(null);
+  const [correctAnswerInfo, setCorrectAnswerInfo] = useState<any>(null);
 	const [wrongGuesses, setWrongGuesses] = useState<number[]>([]);
 	const timeout = useRef<any>(null);
 
 	const makeBatch = () => {
 		const newBatch = [];
-		while (newBatch.length < 3) newBatch.push(generateHex());
+		while (newBatch.length < 4) newBatch.push(generateHex());
 		setBatch(newBatch);
 	};
 
 	const start = () => {
 		makeBatch();
-		setAnswer(Math.floor(Math.random() * 3));
+    const answerIndex = Math.floor(Math.random() * 4);
+    setAnswer(answerIndex);
 	};
 
 	const reset = () => {
@@ -65,6 +67,7 @@ function App() {
 				}`}
 				onClick={() => checkAnswer(num)}
 				disabled={isWrong || timeout.current}
+        key={val}
 			>
 				{val}
 			</button>
@@ -74,6 +77,23 @@ function App() {
 	useEffect(() => {
 		start();
 	}, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      const answerHex = batch[answer];
+
+      if (answerHex) {
+        const hexData = await fetch(
+          `https://www.thecolorapi.com/id?hex=${
+            answerHex && answerHex.replace("#", "")
+          }`
+        );
+
+        setCorrectAnswerInfo(await hexData.json());
+      }
+    }
+    fetchData();
+  }, [batch]);
 
 	return (
 		<>
@@ -86,10 +106,25 @@ function App() {
 					<div className="text-center mb-2 md:mb-10">
 						<h1 className="text-xl">Score: {score}</h1>
 					</div>
-					<div
-						className="w-64 h-64 md:w-96 md:h-96 transition-colors"
-						style={{ backgroundColor: batch[answer] }}
-					/>
+          <div
+            className="w-64 h-64 md:w-96 md:h-96 transition-colors content-center justify-items-center flex flex-col"
+            style={{ backgroundColor: batch[answer] }}
+          >
+            <div className="m-auto text-center relative">
+              <div className="z-100">
+                <p className="block">
+                  Color Name:{" "}
+                  {correctAnswerInfo && correctAnswerInfo?.name?.value}
+                </p>
+                <p className="block">
+                  RGB: {correctAnswerInfo && correctAnswerInfo?.rgb?.value}
+                </p>
+                <p className="block">
+                  HSL: {correctAnswerInfo && correctAnswerInfo?.hsl?.value}
+                </p>
+              </div>
+            </div>
+          </div>
 					<div className="flex flex-col md:flex-row w-64 md:w-96 md:h-24 justify-between mt-10">
 						{batch.map((hex, i) => button(hex, i))}
 					</div>
